@@ -6,7 +6,7 @@ def local_dirs
   (Dir.entries('.') - ['.', '..']).find_all { |x| File.directory? x }
 end
 
-start = '/mnt/epsilon/music/mp3'
+start = ARGV[0] || '/mnt/epsilon/music/mp3'
 
 Dir.chdir start do
   local_dirs.each do |artist|

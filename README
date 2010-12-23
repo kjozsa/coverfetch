@@ -1,0 +1,4 @@
+quick hack to fetch music covers from last.fm for an artist/album dir structure
+
+requires imagemagick for converting pngs, saves the cover for each album as 'cover.jpg'
+

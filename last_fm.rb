@@ -23,5 +23,5 @@ def fetch_cover(artist, album)
   return album['image'][3]['content']
 end
  
-puts fetch_cover('Nickelback', 'Dark Horse')
+#puts fetch_cover('Nickelback', 'Dark Horse')
 

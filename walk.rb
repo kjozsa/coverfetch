@@ -6,38 +6,45 @@ def local_dirs
   (Dir.entries('.') - ['.', '..']).find_all { |x| File.directory? x }
 end
 
-start = ARGV[0] || '/mnt/epsilon/music/mp3'
+def fetch_one(artist, album)
+  puts "> #{artist} - #{album}"
 
-Dir.chdir start do
-  local_dirs.each do |artist|
-    Dir.chdir artist do
-      local_dirs.each do |album|
-        Dir.chdir album do
-          next if File.exists? 'cover.jpg'
-          next if File.exists? 'cover.png'
+  coverurl = fetch_cover(artist, album)
+  puts "< #{coverurl}"
+  return unless coverurl
 
-          puts "> #{artist} - #{album}"
+  ext = File.extname coverurl
+  cover = 'cover' + ext
+  puts "= #{cover}"
 
-          coverurl = fetch_cover(artist, album)
-          puts "< #{coverurl}"
-          next unless coverurl
+  open(cover, 'wb') do |file|
+    open(coverurl) do |url|
+      file.write(url.read)
+    end
+  end 
 
-          ext = File.extname coverurl
-          cover = 'cover' + ext
-          puts "= #{cover}"
+  return if ext == '.jpg'
+  puts "X convert #{cover} cover.jpg"
+  `convert #{cover} cover.jpg ; rm #{cover}`
+end
 
-          open(cover, 'wb') do |file|
-            open(coverurl) do |url|
-              file.write(url.read)
-            end
-          end 
+def fetch_all
+  start = ARGV[0] || '/mnt/epsilon/music/mp3'
 
-          next if ext == '.jpg'
-          puts "X convert #{cover} cover.jpg"
-          `convert #{cover} cover.jpg ; rm #{cover}`
+  Dir.chdir start do
+    local_dirs.each do |artist|
+      Dir.chdir artist do
+        local_dirs.each do |album|
+          Dir.chdir album do
+            next if File.exists? 'cover.jpg'
+
+            fetch_one(artist, album)
+         end
         end
       end
     end
   end
 end
+
+fetch_all if __FILE__ == $0
 
